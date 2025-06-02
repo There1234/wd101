@@ -96,10 +96,11 @@
 
       function setDobLimits() {
          const today = new Date();
+         // Max allowed DOB: 18 years ago (inclusive)
          const maxDate = new Date(today.getFullYear() - 18, today.getMonth(), today.getDate());
-         const minDate = new Date(today.getFullYear() - 55, today.getMonth(), today.getDate());
+         // Min allowed DOB: 55 years ago + 1 day (exclusive)
+         const minDate = new Date(today.getFullYear() - 55, today.getMonth(), today.getDate() + 1);
 
-         // Format as yyyy-mm-dd in local time
          const formatDate = (date) => {
             const yyyy = date.getFullYear();
             const mm = String(date.getMonth() + 1).padStart(2, '0');
@@ -115,7 +116,6 @@
 
       dob.addEventListener("input", () => {
          dob.setCustomValidity("");
-         // Only validate if full date is entered
          if (dob.value.length === 10) {
             if (dob.value < dob.min || dob.value > dob.max) {
                dob.classList.add("invalid-date");
@@ -136,24 +136,25 @@
             return;
          }
 
-         if (dob.value < dob.min) {
-            dob.setCustomValidity(`Date must be ${dob.min} or later.`);
+         // Explicit age calculation for robust validation
+         const dobDate = new Date(dob.value);
+         const today = new Date();
+         let age = today.getFullYear() - dobDate.getFullYear();
+         const m = today.getMonth() - dobDate.getMonth();
+         if (m < 0 || (m === 0 && today.getDate() < dobDate.getDate())) {
+            age--;
+         }
+
+         if (age < 18 || age >= 55) {
+            dob.setCustomValidity("You must be between 18 and 55 years old.");
             dob.reportValidity();
             event.preventDefault();
             dob.classList.add("invalid-date");
             return;
+         } else {
+            dob.setCustomValidity("");
+            dob.classList.remove("invalid-date");
          }
-
-         if (dob.value > dob.max) {
-            dob.setCustomValidity(`Date must be ${dob.max} or earlier.`);
-            dob.reportValidity();
-            event.preventDefault();
-            dob.classList.add("invalid-date");
-            return;
-         }
-
-         dob.setCustomValidity("");
-         dob.classList.remove("invalid-date");
       });
 
       const email = document.getElementById("email");
@@ -167,7 +168,6 @@
          }
       });
    </script>
-
    <script src="./index.js"></script>
 </body>
 
