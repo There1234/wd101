@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+   <meta charset="UTF-8">
+   <title>Registration Form</title>
+   <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+   <style>
+      form {
+         margin: 0 auto;
+         width: 500px;
+         /* Increased width */
+         border: 1px solid #ccc;
+         padding: 20px;
+         text-align: left;
+      }
+
+      .form-group {
+         display: flex;
+         justify-content: space-between;
+         align-items: center;
+         margin-bottom: 15px;
+      }
+
+      .form-group label {
+         flex: 1;
+         margin-right: 10px;
+      }
+
+      .form-group input {
+         flex: 2;
+      }
+
+      input[type="text"],
+      input[type="email"],
+      input[type="password"],
+      input[type="date"] {
+         border: 1px solid black;
+         padding: 5px;
+         border-radius: 4px;
+         width: 100%;
+      }
+   </style>
+</head>
+
+<body>
+   <h1 style="text-align: center; font-size: x-large;">Registration Form</h1>
+   <form id="user-form">
+      <div class="form-group">
+         <label for="name">Name</label>
+         <input required type="text" id="name" name="name" placeholder="Enter your full name">
+      </div>
+
+      <div class="form-group">
+         <label for="email">Email</label>
+         <input required type="email" id="email" name="email" placeholder="Enter your email">
+      </div>
+
+      <div class="form-group">
+         <label for="password">Password</label>
+         <input required type="password" id="password" name="password" placeholder="Enter your password">
+      </div>
+
+      <div class="form-group">
+         <label for="dob">Date of Birth</label>
+         <input type="date" id="dob" name="dob" required>
+      </div>
+
+      <div style="margin-bottom: 15px;">
+         <input required type="checkbox" id="acceptTerms" name="acceptTerms">
+         <label for="acceptTerms">Accept Terms & Conditions</label>
+      </div>
+
+      <button type="submit" class="bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 rounded">
+         Submit
+      </button>
+   </form>
+
+   <hr>
+   <div id="user-entries"></div>
+
+   <script>
+      const dob = document.getElementById("dob");
+      const form = document.getElementById("user-form");
+
+      function setDobLimits() {
+         const today = new Date();
+         const maxDate = new Date(today.getFullYear() - 18, today.getMonth(), today.getDate());
+         const minDate = new Date(today.getFullYear() - 55, today.getMonth(), today.getDate());
+
+         const formatDate = (date) => date.toISOString().split("T")[0];
+
+         dob.min = formatDate(minDate);
+         dob.max = formatDate(maxDate);
+      }
+
+      setDobLimits();
+
+      dob.addEventListener("input", () => {
+         dob.setCustomValidity("");
+
+         if (dob.value.length === 10) {
+            if (dob.value < dob.min || dob.value > dob.max) {
+               dob.classList.add("invalid-date");
+            } else {
+               dob.classList.remove("invalid-date");
+            }
+         } else {
+            dob.classList.remove("invalid-date");
+         }
+      });
+
+      form.addEventListener("submit", (event) => {
+         if (!dob.value) {
+            dob.setCustomValidity("Date of Birth is required.");
+            dob.reportValidity();
+            event.preventDefault();
+            dob.classList.remove("invalid-date");
+            return;
+         }
+
+         if (dob.value < dob.min) {
+            dob.setCustomValidity(`Date must be ${dob.min} or later.`);
+            dob.reportValidity();
+            event.preventDefault();
+            dob.classList.add("invalid-date");
+            return;
+         }
+
+         if (dob.value > dob.max) {
+            dob.setCustomValidity(`Date must be ${dob.max} or earlier.`);
+            dob.reportValidity();
+            event.preventDefault();
+            dob.classList.add("invalid-date");
+            return;
+         }
+
+         dob.setCustomValidity("");
+         dob.classList.remove("invalid-date");
+      });
+      const email = document.getElementById("email");
+
+      email.addEventListener("input", () => {
+         // Clear any previous custom validity message
+         email.setCustomValidity("");
+         if (email.validity.typeMismatch || !email.checkValidity()) {
+            email.classList.add("invalid-email");
+         } else {
+            email.classList.remove("invalid-email");
+         }
+      });
+   </script>
+
+   <style>
+      /* Red text for invalid date input */
+      input[type="date"].invalid-date {
+         color: red;
+      }
+
+      input[type="email"].invalid-email {
+         color: red;
+      }
+   </style>
+   <script src="./index.js"></script>
+</body>
+
+</html>
