@@ -40,6 +40,18 @@
          border-radius: 4px;
          width: 100%;
       }
+
+
+
+      input.invalid-email {
+         border-color: red !important;
+         color: red !important;
+      }
+
+      input.invalid-date {
+         border-color: red !important;
+         color: red !important;
+      }
    </style>
 </head>
 
@@ -78,7 +90,6 @@
 
    <hr>
    <div id="user-entries"></div>
-
    <script>
       const dob = document.getElementById("dob");
       const form = document.getElementById("user-form");
@@ -88,7 +99,13 @@
          const maxDate = new Date(today.getFullYear() - 18, today.getMonth(), today.getDate());
          const minDate = new Date(today.getFullYear() - 55, today.getMonth(), today.getDate());
 
-         const formatDate = (date) => date.toISOString().split("T")[0];
+         // Format as yyyy-mm-dd in local time
+         const formatDate = (date) => {
+            const yyyy = date.getFullYear();
+            const mm = String(date.getMonth() + 1).padStart(2, '0');
+            const dd = String(date.getDate()).padStart(2, '0');
+            return `${yyyy}-${mm}-${dd}`;
+         };
 
          dob.min = formatDate(minDate);
          dob.max = formatDate(maxDate);
@@ -98,7 +115,7 @@
 
       dob.addEventListener("input", () => {
          dob.setCustomValidity("");
-
+         // Only validate if full date is entered
          if (dob.value.length === 10) {
             if (dob.value < dob.min || dob.value > dob.max) {
                dob.classList.add("invalid-date");
@@ -138,10 +155,10 @@
          dob.setCustomValidity("");
          dob.classList.remove("invalid-date");
       });
+
       const email = document.getElementById("email");
 
       email.addEventListener("input", () => {
-         // Clear any previous custom validity message
          email.setCustomValidity("");
          if (email.validity.typeMismatch || !email.checkValidity()) {
             email.classList.add("invalid-email");
@@ -151,16 +168,6 @@
       });
    </script>
 
-   <style>
-      /* Red text for invalid date input */
-      input[type="date"].invalid-date {
-         color: red;
-      }
-
-      input[type="email"].invalid-email {
-         color: red;
-      }
-   </style>
    <script src="./index.js"></script>
 </body>
 
