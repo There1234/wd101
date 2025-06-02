@@ -136,17 +136,16 @@
             return;
          }
 
-         // Explicit age calculation for robust validation
-         const dobDate = new Date(dob.value);
          const today = new Date();
-         let age = today.getFullYear() - dobDate.getFullYear();
-         const m = today.getMonth() - dobDate.getMonth();
-         if (m < 0 || (m === 0 && today.getDate() < dobDate.getDate())) {
-            age--;
-         }
+         const maxDate = new Date(today.getFullYear() - 18, today.getMonth(), today.getDate());
+         const minDate = new Date(today.getFullYear() - 55, today.getMonth(), today.getDate() + 1);
 
-         if (age < 18 || age >= 55) {
-            dob.setCustomValidity("You must be between 18 and 55 years old.");
+         const dobDate = new Date(dob.value);
+
+         if (dobDate < minDate || dobDate > maxDate) {
+            dob.setCustomValidity(
+               `Date of Birth must be between ${minDate.toISOString().slice(0, 10)} and ${maxDate.toISOString().slice(0, 10)}.`
+            );
             dob.reportValidity();
             event.preventDefault();
             dob.classList.add("invalid-date");
